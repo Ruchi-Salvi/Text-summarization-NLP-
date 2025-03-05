@@ -1,0 +1,44 @@
+import nltk 
+from nltk.tokenize import sent_tokenize, word_tokenize 
+from nltk.corpus import stopwords 
+from string import punctuation 
+from collections import defaultdict 
+def calculate_sentence_scores(sentences, word_frequencies, sentence_scores): 
+for sentence in sentences: 
+for word in word_tokenize(sentence.lower()): 
+if word in word_frequencies.keys(): 
+if len(sentence.split(' ')) < 30: 
+sentence_scores[sentence] += word_frequencies[word] 
+return sentence_scores 
+def generate_summary(article): 
+
+# Tokenize the article into sentences 
+sentences = sent_tokenize(article) 
+
+# Tokenize the words in the article 
+words = word_tokenize(article.lower()) 
+
+# Remove stopwords and punctuations from the list of words 
+stop_words = set(stopwords.words('english') + list(punctuation)) 
+filtered_words = [word for word in words if word not in stop_words] 
+
+# Calculate word frequencies 
+word_frequencies = defaultdict(int) 
+for word in filtered_words: 
+word_frequencies[word] += 1 
+
+# Calculate sentence scores 
+sentence_scores = defaultdict(int) 
+sentence_scores = calculate_sentence_scores(sentences, word_frequencies, sentence_scores) 
+
+# Sort the sentences based on their scores and select top 3 
+summary_sentences = sorted(sentence_scores.items(), key=lambda x: x[1], reverse=True)[:3] 
+
+# Join the summary sentences into a single string 
+summary = ' '.join([sentence[0] for sentence in summary_sentences]) 
+return summary 
+
+# Example usage 
+article = "The coronavirus pandemic has swept across the world, leaving millions infected and hundreds of thousands dead. Governments have implemented various measures to slow the spread of the virus, including lockdowns, social distancing guidelines, and mask mandates. The pandemic has also had a significant impact on the global economy, with many businesses shutting down or struggling to stay afloat. Scientists are working tirelessly to develop a vaccine, and there are currently several promising candidates in clinical trials." 
+summary = generate_summary(article)
+print(summary)
