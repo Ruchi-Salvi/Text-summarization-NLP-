@@ -1,0 +1,38 @@
+import heapq 
+import nltk 
+from nltk.corpus import stopwords 
+from nltk.tokenize import word_tokenize, sent_tokenize 
+
+# Define the input text 
+text = "Natural language processing (NLP) is an interdisciplinary subfield of linguistics, computer science, and artificial intelligence concerned with the interactions between computers and human language, in particular how to program computers to process and analyze large amounts of natural language data. The goal is a computer capable of understanding the contents of documents, including the contextual nuances of the language within them. The technology can then accurately extract information and insights contained in the documents as well as categorize and organize the documents themselves.Challenges in natural language processing frequently involve speech recognition, natural-language understanding, and natural-language generation." 
+
+# Tokenize the text into sentences and words 
+sentences = sent_tokenize(text) 
+words = word_tokenize(text) 
+
+# Remove stop words 
+stop_words = set(stopwords.words('english')) 
+filtered_words = [word for word in words if not word in stop_words] 
+
+# Calculate the frequency of each word 
+word_freq = nltk.FreqDist(filtered_words) 
+
+# Assign a score to each sentence based on the frequency of its words 
+sent_scores = {} 
+for sentence in sentences: 
+for word in word_tokenize(sentence.lower()): 
+if word in word_freq: 
+if len(sentence.split(' ')) < 30: 
+if sentence not in sent_scores: 
+sent_scores[sentence] = word_freq[word] 
+else: 
+sent_scores[sentence] += word_freq[word] 
+
+# Get the top 3 sentences with the highest scores 
+summary_sentences = heapq.nlargest(3, sent_scores, key=sent_scores.get) 
+
+# Concatenate the summary sentences into a summary 
+summary = ' '.join(summary_sentences) 
+
+# Print the summary 
+print(summary) 
